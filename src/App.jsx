@@ -23,17 +23,18 @@ function App() {
     },
   ]);
 
-  const [filter, setFilter] = useState([{ sortValue: "", query: "" }]);
+  const [filter, setFilter] = useState({ sort: "", query: "" });
 
   const sortedPosts = useMemo(() => {
-    if (filter.sortValue) {
+    console.log(filter);
+    if (filter.sort) {
       return [...posts].sort((a, b) =>
-        a[filter.sortValue].localeCompare(b[filter.sortValue])
+        a[filter.sort].localeCompare(b[filter.sort])
       );
     }
 
     return posts;
-  }, [filter.sortValue, posts]);
+  }, [filter.sort, posts]);
 
   const sortedAndSearchedPosts = useMemo(() => {
     return sortedPosts.filter((item) =>

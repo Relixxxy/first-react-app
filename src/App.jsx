@@ -1,77 +1,33 @@
-import { useMemo, useState } from "react";
-import PostList from "./components/PostList";
-import PostForm from "./components/PostForm";
-import PostFilter from "./components/PostFilter";
-import "./styles/App.css";
+import { BrowserRouter, useAsyncError } from "react-router-dom";
+import Navbar from "components/UI/Navbar/Navbar";
+import AppRouter from "components/AppRouter";
+import { AuthContext } from "context/context";
+import { useEffect, useState } from "react";
 
-function App() {
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      title: "JS",
-      body: "It is very interesting  programming language",
-    },
-    {
-      id: 2,
-      title: "C#",
-      body: "It is very extremely  programming language",
-    },
-    {
-      id: 3,
-      title: "PHP",
-      body: "It is interesting  programming language",
-    },
-  ]);
-
-  const [filter, setFilter] = useState({ sort: "", query: "" });
-
-  const sortedPosts = useMemo(() => {
-    console.log(filter);
-    if (filter.sort) {
-      return [...posts].sort((a, b) =>
-        a[filter.sort].localeCompare(b[filter.sort])
-      );
+const App = () => {
+  const [isAuth, setIsAuth] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    if (localStorage.getItem("auth")) {
+      setIsAuth(true);
     }
-
-    return posts;
-  }, [filter.sort, posts]);
-
-  const sortedAndSearchedPosts = useMemo(() => {
-    return sortedPosts.filter((item) =>
-      item.title.toLowerCase().includes(filter.query.toLowerCase())
-    );
-  }, [filter.query, sortedPosts]);
-
-  const createPost = (post) => {
-    setPosts([...posts, post]);
-  };
-
-  const removePost = (post) => {
-    setPosts(posts.filter((p) => p.id !== post.id));
-  };
+    setIsLoading(false);
+  }, []);
 
   return (
-    <div className="App">
-      <PostForm create={createPost} />
-      <hr style={{ margin: "15px 0" }} />
-      <PostFilter filter={filter} setFilter={setFilter} />
-      {sortedAndSearchedPosts.length !== 0 ? (
-        <PostList
-          remove={removePost}
-          posts={sortedAndSearchedPosts}
-          title="Post list"
-        />
-      ) : (
-        <h1
-          style={{
-            textAlign: "center",
-          }}
-        >
-          There are no posts !
-        </h1>
-      )}
-    </div>
+    <AuthContext.Provider
+      value={{
+        isAuth,
+        setIsAuth,
+        isLoading,
+      }}
+    >
+      <BrowserRouter>
+        <Navbar />
+        <AppRouter />
+      </BrowserRouter>
+    </AuthContext.Provider>
   );
-}
+};
 
 export default App;
